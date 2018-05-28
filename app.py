@@ -32,7 +32,6 @@ def load_logs(filename):
 
 def add_to_logs(date, url):
     """ Aggregate url counter on minute, hour and day step """
-    
     # minutes
     counterdict = logs_minute[date.year][date.month][date.day][date.hour][date.minute]
     if not isinstance(counterdict, Counterdict):
