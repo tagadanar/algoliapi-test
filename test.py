@@ -35,4 +35,4 @@ for test in queries:
 		print(json.dumps(json_result, sort_keys=True))
 		print(json.dumps(test[1], sort_keys=True))
 	result = "OK" if is_equal else "NOK"
-	print("{} {}".format(result, test[0]))
+	print("{} : {}s - {}".format(result, r.elapsed.total_seconds(), test[0]))
