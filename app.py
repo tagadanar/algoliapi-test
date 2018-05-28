@@ -31,7 +31,7 @@ def load_logs(filename):
 
 
 def add_to_logs(date, url):
-    """ Aggregate url counter on a minutes and hours step """
+    """ Aggregate url counter on minute, hour and day step """
     
     # minutes
     counterdict = logs_minute[date.year][date.month][date.day][date.hour][date.minute]
@@ -62,7 +62,7 @@ def recurse_iter(d):
 
 
 def get_nested_logs(date_str):
-    """ Return nested Vividict in logs according to date_str """
+    """ Return nested Vividict in logs_xxx according to date_str """
     date_array = date_str.replace(":", "-").replace(" ", "-").split("-")
     date_map = map(int, date_array)
     if len(date_array) <=3: # request period is day or bigger
