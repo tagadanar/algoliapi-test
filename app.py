@@ -9,8 +9,11 @@ from dictionnaries import Vividict, Counterdict
 
 # Setting up Flask app
 app = Flask(__name__)
+
 # Setting up global logs dict
-logs = Vividict()
+logs_minute = Vividict()
+logs_hour = Vividict()
+logs_day = Vividict()
 
 
 # Utility functions
@@ -28,10 +31,22 @@ def load_logs(filename):
 
 
 def add_to_logs(date, url):
-    """ Aggregate url counter on a minute step """
-    counterdict = logs[date.year][date.month][date.day][date.hour][date.minute]
+    """ Aggregate url counter on a minutes and hours step """
+    
+    # minutes
+    counterdict = logs_minute[date.year][date.month][date.day][date.hour][date.minute]
     if not isinstance(counterdict, Counterdict):
-        counterdict = logs[date.year][date.month][date.day][date.hour][date.minute] = Counterdict()
+        counterdict = logs_minute[date.year][date.month][date.day][date.hour][date.minute] = Counterdict()
+    counterdict[url] += 1
+    # hours
+    counterdict = logs_hour[date.year][date.month][date.day][date.hour]
+    if not isinstance(counterdict, Counterdict):
+        counterdict = logs_hour[date.year][date.month][date.day][date.hour] = Counterdict()
+    counterdict[url] += 1
+    # days
+    counterdict = logs_day[date.year][date.month][date.day]
+    if not isinstance(counterdict, Counterdict):
+        counterdict = logs_day[date.year][date.month][date.day] = Counterdict()
     counterdict[url] += 1
 
 
@@ -48,8 +63,14 @@ def recurse_iter(d):
 
 def get_nested_logs(date_str):
     """ Return nested Vividict in logs according to date_str """
-    date_array = map(int, date_str.replace(":", "-").replace(" ", "-").split("-"))
-    nested = reduce(lambda a, b: a[b], date_array, logs)
+    date_array = date_str.replace(":", "-").replace(" ", "-").split("-")
+    date_map = map(int, date_array)
+    if len(date_array) <=3: # request period is day or bigger
+        nested = reduce(lambda a, b: a[b], date_map, logs_day)
+    elif len(date_array) <= 4: # request period is hour or bigger
+        nested = reduce(lambda a, b: a[b], date_map, logs_hour)
+    else:
+        nested = reduce(lambda a, b: a[b], date_map, logs_minute)
     return nested
 
 
